@@ -2,6 +2,8 @@
 <resources>
 
     <string name="app_name">Truco</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="new_game">Novo Jogo</string>
+    <string name="connect">Conectar</string>
+    <string name="options">Opções</string>
 
 </resources>
