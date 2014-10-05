@@ -22,7 +22,8 @@ public class MainActivity extends Activity {
 		m_newGameButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// it was the 1st button
+				Intent intent = new Intent(MainActivity.this, GameActivity.class);
+				startActivity(intent);
 			}
 		});
 		
@@ -31,7 +32,6 @@ public class MainActivity extends Activity {
 		m_connectButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// it was the 1st button
 			}
 		});
 		
@@ -41,7 +41,6 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				Intent intent = new Intent(MainActivity.this, OptionsActivity.class);
 			    startActivity(intent);
-				// it was the 1st button
 			}
 		});
 	}

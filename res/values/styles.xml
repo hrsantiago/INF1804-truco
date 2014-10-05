@@ -15,6 +15,14 @@
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:windowActionBar">false</item>
+    	<item name="android:windowNoTitle">true</item>
+    	<item name="android:windowAnimationStyle">@style/FadeAnimationActivity</item>
+    </style>
+    
+    <style name="FadeAnimationActivity" parent="@android:style/Animation.Activity"> 
+       	<item name="android:activityOpenEnterAnimation">@anim/abc_fade_in</item>
+       	<item name="android:activityCloseExitAnimation">@anim/abc_fade_out</item>
     </style>
 
 </resources>
