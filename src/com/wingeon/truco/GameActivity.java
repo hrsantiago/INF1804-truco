@@ -19,8 +19,8 @@ public class GameActivity extends Activity {
 		super.onStart();
 		m_game.start();
 		
-		ImageView image = (ImageView) findViewById(R.id.imageView1);
-        image.setImageResource(R.drawable.card_red_v);
+		//ImageView image = (ImageView) findViewById(R.id.imageView1);
+        //image.setImageResource(R.drawable.card_red_v);
 	}
 
 	@Override

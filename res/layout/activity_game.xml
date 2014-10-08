@@ -1,16 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/table_green"
-    android:orientation="vertical" >
+    android:background="@color/table_green" >
 
     <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="150dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="0.8"
-        android:src="@drawable/abc_ab_bottom_solid_dark_holo" />
+        android:id="@+id/player_3_card_1"
+        android:layout_width="37dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/player_3_card_2"
+        android:layout_toStartOf="@+id/player_3_card_2"
+        android:contentDescription="Partner Card 1"
+        android:src="@drawable/card_red_v" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/player_3_card_2"
+        android:layout_width="37dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="Partner Card 2"
+        android:src="@drawable/card_red_v" />
+
+    <ImageView
+        android:id="@+id/player_3_card_3"
+        android:layout_width="37dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/player_3_card_2"
+        android:layout_toRightOf="@+id/player_3_card_2"
+        android:contentDescription="Partner Card 3"
+        android:src="@drawable/card_red_v" />
+
+</RelativeLayout>
