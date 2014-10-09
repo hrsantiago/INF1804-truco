@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <EditTextPreference android:key="name" android:title="@string/name" android:summary="@string/change_name" />
+    
+	<ListPreference android:key="table_color" android:title="@string/table_color" android:summary="@string/select_table_color"
+	    android:entries="@array/TableColors" android:entryValues="@array/TableColorValues" />
+	
+</PreferenceScreen>

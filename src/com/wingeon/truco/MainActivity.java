@@ -2,7 +2,10 @@ package com.wingeon.truco;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -44,11 +47,20 @@ public class MainActivity extends Activity {
 			    startActivity(intent);
 			}
 		});
-		
+
 		// Code to improve testing
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
 	            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
 	            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
 	            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+		int color = Color.parseColor(prefs.getString("table_color", "white"));
+		findViewById(R.id.main_view).setBackgroundColor(color);
 	}
 }

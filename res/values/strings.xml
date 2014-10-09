@@ -7,11 +7,29 @@
     <string name="options">Opções</string>
     <string name="help">Ajuda</string>
     <string name="exit">Sair</string>
-    
     <string name="card">Carta</string>
     <string name="player_1">Jogador 1</string>
     <string name="player_2">Jogador 2</string>
     <string name="player_3">Jogador 3</string>
     <string name="player_4">Jogador 4</string>
+    <string name="name">Nome</string>
+    <string name="change_name">Troque seu nome</string>
+    <string name="table_color">Cor da mesa</string>
+    <string name="select_table_color">Selecione a cor da mesa</string>
+
+    <string-array name="TableColors">
+        <item>Verde</item>
+        <item>Vermelho</item>
+        <item>Preto</item>
+        <item>Caqui</item>
+        <item>Pardo</item>
+    </string-array>
+    <string-array name="TableColorValues">
+        <item>#01864d</item>
+        <item>#9b3a33</item>
+        <item>#231f20</item>
+        <item>#ad9476</item>
+        <item>#7f6d5f</item>
+    </string-array>
 
 </resources>

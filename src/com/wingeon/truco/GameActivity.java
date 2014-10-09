@@ -2,11 +2,15 @@ package com.wingeon.truco;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class GameActivity extends Activity {
 
@@ -29,6 +33,17 @@ public class GameActivity extends Activity {
 	protected void onStop() {
 		super.onStop();
 		m_game.stop();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+		String name = prefs.getString("name", "Jogador 1");
+
+		TextView p1Name = (TextView) findViewById(R.id.player_1_name);
+		p1Name.setText(name);
 	}
 	
 	@Override
