@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res/com.wingeon.truco"
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,6 +11,7 @@
         android:layout_height="@dimen/card_self_height"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/card_margin"
+        android:layout_marginEnd="@dimen/card_margin"
         android:layout_toLeftOf="@+id/player_1_card_2"
         android:layout_toStartOf="@+id/player_1_card_2"
         android:contentDescription="@string/card"
@@ -33,6 +33,7 @@
         android:layout_height="@dimen/card_self_height"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="@dimen/card_margin"
+        android:layout_marginStart="@dimen/card_margin"
         android:layout_toEndOf="@+id/player_1_card_2"
         android:layout_toRightOf="@+id/player_1_card_2"
         android:contentDescription="@string/card"
@@ -56,7 +57,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@color/name_friend"
-        android:text="Player 1" />
+        android:text="@string/player_1" />
 
     <ImageView
         android:id="@+id/player_2_card_1"
@@ -64,8 +65,10 @@
         android:layout_height="@dimen/card_height"
         android:layout_above="@+id/player_2_card_2"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_marginBottom="@dimen/card_margin_diff_half"
         android:layout_marginLeft="@dimen/card_diff_half"
+        android:layout_marginStart="@dimen/card_diff_half"
         android:contentDescription="@string/card"
         android:rotation="100"
         android:src="@drawable/card_red_v" />
@@ -75,8 +78,10 @@
         android:layout_width="@dimen/card_width"
         android:layout_height="@dimen/card_height"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/card_diff_half"
+        android:layout_marginStart="@dimen/card_diff_half"
         android:contentDescription="@string/card"
         android:rotation="95"
         android:src="@drawable/card_red_v" />
@@ -86,8 +91,10 @@
         android:layout_width="@dimen/card_width"
         android:layout_height="@dimen/card_height"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/player_2_card_2"
         android:layout_marginLeft="@dimen/card_diff_half"
+        android:layout_marginStart="@dimen/card_diff_half"
         android:layout_marginTop="@dimen/card_margin_diff_half"
         android:contentDescription="@string/card"
         android:rotation="80"
@@ -98,8 +105,10 @@
         android:layout_width="@dimen/card_width"
         android:layout_height="@dimen/card_height"
         android:layout_toRightOf="@+id/player_2_card_2"
+        android:layout_toEndOf="@+id/player_2_card_2"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/card_diff"
+        android:layout_marginStart="@dimen/card_diff"
         android:contentDescription="@string/card"
         android:src="@drawable/card_red_v" />
     
@@ -108,9 +117,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:background="@color/name_opponent"
-        android:text="Player 2" />
+        android:text="@string/player_2" />
 
     <ImageView
         android:id="@+id/player_3_card_1"
@@ -118,6 +128,7 @@
         android:layout_height="@dimen/card_height"
         android:layout_alignParentTop="true"
         android:layout_marginRight="@dimen/card_margin"
+        android:layout_marginEnd="@dimen/card_margin"
         android:layout_toLeftOf="@+id/player_3_card_2"
         android:layout_toStartOf="@+id/player_3_card_2"
         android:contentDescription="@string/card"
@@ -140,6 +151,7 @@
         android:layout_height="@dimen/card_height"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/card_margin"
+        android:layout_marginStart="@dimen/card_margin"
         android:layout_toEndOf="@+id/player_3_card_2"
         android:layout_toRightOf="@+id/player_3_card_2"
         android:contentDescription="@string/card"
@@ -163,7 +175,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:background="@color/name_friend"
-        android:text="Player 3" />
+        android:text="@string/player_3" />
     
     <ImageView
         android:id="@+id/player_4_card_1"
@@ -171,8 +183,10 @@
         android:layout_height="@dimen/card_height"
         android:layout_above="@+id/player_4_card_2"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="@dimen/card_margin_diff_half"
         android:layout_marginRight="@dimen/card_diff_half"
+        android:layout_marginEnd="@dimen/card_diff_half"
         android:contentDescription="@string/card"
         android:rotation="100"
         android:src="@drawable/card_red_v" />
@@ -182,8 +196,10 @@
         android:layout_width="@dimen/card_width"
         android:layout_height="@dimen/card_height"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/card_diff_half"
+        android:layout_marginEnd="@dimen/card_diff_half"
         android:contentDescription="@string/card"
         android:rotation="95"
         android:src="@drawable/card_red_v" />
@@ -193,8 +209,10 @@
         android:layout_width="@dimen/card_width"
         android:layout_height="@dimen/card_height"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/player_4_card_2"
         android:layout_marginRight="@dimen/card_diff_half"
+        android:layout_marginEnd="@dimen/card_diff_half"
         android:layout_marginTop="@dimen/card_margin_diff_half"
         android:contentDescription="@string/card"
         android:rotation="80"
@@ -205,8 +223,10 @@
         android:layout_width="@dimen/card_width"
         android:layout_height="@dimen/card_height"
         android:layout_toLeftOf="@+id/player_4_card_2"
+        android:layout_toStartOf="@+id/player_4_card_2"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/card_diff"
+        android:layout_marginEnd="@dimen/card_diff"
         android:contentDescription="@string/card"
         android:src="@drawable/card_red_v" />
     
@@ -215,9 +235,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@color/name_opponent"
         android:gravity="bottom"
-        android:text="Player 4" />
+        android:text="@string/player_4" />
 
 </RelativeLayout>
