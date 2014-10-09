@@ -9,4 +9,7 @@
     <color name="table_khaki">#ad9476</color>
     <color name="table_taupe">#7f6d5f</color>
     
+    <color name="name_friend">#c1dfe6</color>
+    <color name="name_opponent">#e6c1c1</color>
+    
 </resources>

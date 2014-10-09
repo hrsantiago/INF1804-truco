@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 
 public class MainActivity extends Activity {
@@ -43,5 +44,11 @@ public class MainActivity extends Activity {
 			    startActivity(intent);
 			}
 		});
+		
+		// Code to improve testing
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+	            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+	            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+	            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 	}
 }

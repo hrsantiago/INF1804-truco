@@ -5,5 +5,7 @@
     <string name="new_game">Novo Jogo</string>
     <string name="connect">Conectar</string>
     <string name="options">Opções</string>
+    
+    <string name="card">Carta</string>
 
 </resources>

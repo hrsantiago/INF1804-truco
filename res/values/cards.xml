@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_width">37dp</dimen>
+    <dimen name="card_height">53dp</dimen>
+    <dimen name="card_diff">16dp</dimen>
+    <dimen name="card_diff_half">8dp</dimen>
+    <dimen name="card_margin">-10dp</dimen>
+    <dimen name="card_margin_diff_half">-26dp</dimen>
+    
+    <dimen name="card_self_width">66dp</dimen>
+    <dimen name="card_self_height">90dp</dimen>
+</resources>
