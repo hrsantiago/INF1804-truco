@@ -8,10 +8,10 @@
     <string name="help">Ajuda</string>
     <string name="exit">Sair</string>
     <string name="card">Carta</string>
-    <string name="player_1">Jogador 1</string>
-    <string name="player_2">Jogador 2</string>
-    <string name="player_3">Jogador 3</string>
-    <string name="player_4">Jogador 4</string>
+    <string name="player_0">Jogador 1</string>
+    <string name="player_1">Jogador 2</string>
+    <string name="player_2">Jogador 3</string>
+    <string name="player_3">Jogador 4</string>
     <string name="name">Nome</string>
     <string name="change_name">Troque seu nome</string>
     <string name="table_color">Cor da mesa</string>

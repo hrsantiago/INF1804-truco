@@ -1,27 +1,27 @@
-package com.wingeon.truco;
+package com.wingeon.truco.core;
 
 public class Card {
 	public enum Suit {
-		Card_Hearts,
-		Card_Diamonds,
-		Card_Clubs,
-		Card_Spades,
+		HEARTS,
+		DIAMONDS,
+		CLUBS,
+		SPADES,
 	};
 
 	public enum Value {
-		Card_A,
-		Card_2,
-		Card_3,
-		Card_4,
-		Card_5,
-		Card_6,
-		Card_7,
-		Card_8,
-		Card_9,
-		Card_10,
-		Card_J,
-		Card_Q,
-		Card_K,
+		_A,
+		_2,
+		_3,
+		_4,
+		_5,
+		_6,
+		_7,
+		_8,
+		_9,
+		_10,
+		_J,
+		_Q,
+		_K,
 	};
 	
 	private Suit m_suit;

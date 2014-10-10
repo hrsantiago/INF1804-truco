@@ -1,4 +1,4 @@
-package com.wingeon.truco;
+package com.wingeon.truco.core;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,19 +24,32 @@ public class Deck {
 		Collections.shuffle(m_cards, random);
 	}
 	
-	void removeCard(Card.Value value, Card.Suit suit) {
+	Card removeFirstCard() {
+		if(m_cards.size() > 0) {
+			Card card = m_cards.firstElement();
+			m_cards.remove(0);
+			return card;
+		}
+		return null;
+	}
+	
+	Card removeCard(Card.Value value, Card.Suit suit) {
 		Iterator<Card> it = m_cards.iterator();
 		while (it.hasNext()) {
 			Card card = it.next();
-		    if(card.getValue() == value && card.getSuit() == suit)
+		    if(card.getValue() == value && card.getSuit() == suit) {
 		    	it.remove();
+		    	return card;
+		    }
 		}
+		return null;
 	}
 	
-	void removeCardOfValue(Card.Value value) {
+	void removeCardsOfValue(Card.Value value) {
 		Iterator<Card> it = m_cards.iterator();
 		while (it.hasNext()) {
-		    if(it.next().getValue() == value)
+			Card card = it.next();
+		    if(card.getValue() == value)
 		    	it.remove();
 		}
 	}
