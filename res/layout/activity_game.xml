@@ -16,6 +16,7 @@
         android:layout_toStartOf="@+id/player_0_card_2"
         android:contentDescription="@string/card"
         android:rotation="-10"
+        android:clickable="true"
         android:src="@drawable/card_spades_j" />
 
     <ImageView
@@ -25,6 +26,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/card"
+        android:clickable="true"
         android:src="@drawable/card_hearts_5" />
 
     <ImageView
@@ -38,6 +40,7 @@
         android:layout_toRightOf="@+id/player_0_card_2"
         android:contentDescription="@string/card"
         android:rotation="10"
+        android:clickable="true"
         android:src="@drawable/card_spades_a" />
     
     <ImageView
@@ -240,5 +243,78 @@
         android:background="@color/name_opponent"
         android:gravity="bottom"
         android:text="@string/player_3" />
+
+    <Button
+        android:id="@+id/truco"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/truco" />
+
+    <Button
+        android:id="@+id/close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/truco"
+        android:text="@string/closed" />
+    
+    <FrameLayout 
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content" 
+	    android:layout_centerInParent="true"
+	    android:paddingLeft="0dp"
+	    android:paddingRight="20dp"
+	    android:paddingTop="20dp">
+	    
+	    <ImageView
+	        android:id="@+id/card_turn"
+	        android:layout_width="@dimen/card_width"
+	        android:layout_height="@dimen/card_height"
+	        android:layout_margin="20dp"
+	        android:layout_marginEnd="20dp"
+	        android:layout_marginRight="20dp"
+	        android:layout_marginTop="20dp"
+	        android:contentDescription="@string/turn"
+	        android:rotation="-30"
+	        android:src="@drawable/card_clubs_4" />
+
+	</FrameLayout>
+	
+    <FrameLayout 
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content" 
+	    android:layout_centerInParent="true">
+	
+	    <ImageView
+	        android:id="@+id/deck"
+	        android:layout_width="40dp"
+	        android:layout_height="56dp"
+	        android:contentDescription="@string/deck"
+	        android:src="@drawable/deck_red" />
+	</FrameLayout>
+
+    <TextView
+        android:id="@+id/team0_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/name_friend"
+        android:text="@string/team_0" />
+
+    <TextView
+        android:id="@+id/team1_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/team0_score"
+        android:background="@color/name_opponent"
+        android:text="@string/team_1" />
 
 </RelativeLayout>

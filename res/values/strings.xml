@@ -8,14 +8,26 @@
     <string name="help">Ajuda</string>
     <string name="exit">Sair</string>
     <string name="card">Carta</string>
+    <string name="deck">Baralho</string>
+    <string name="turn">Vira</string>
     <string name="player_0">Jogador 1</string>
     <string name="player_1">Jogador 2</string>
     <string name="player_2">Jogador 3</string>
     <string name="player_3">Jogador 4</string>
+    <string name="team">Time</string>
+    <string name="team_0">Time 1</string>
+    <string name="team_1">Time 2</string>
     <string name="name">Nome</string>
     <string name="change_name">Troque seu nome</string>
     <string name="table_color">Cor da mesa</string>
     <string name="select_table_color">Selecione a cor da mesa</string>
+    
+    <string name="truco">Truco</string>
+    <string name="six">Seis</string>
+    <string name="nine">Nove</string>
+    <string name="twelve">Doze</string>
+    <string name="open">Aberta</string>
+    <string name="closed">Fechada</string>
 
     <string-array name="TableColors">
         <item>Verde</item>

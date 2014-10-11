@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
 		super.onResume();
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-		int color = Color.parseColor(prefs.getString("table_color", "white"));
+		int color = Color.parseColor(prefs.getString("table_color", getResources().getString(R.color.table_green)));
 		findViewById(R.id.main_view).setBackgroundColor(color);
 	}
 }

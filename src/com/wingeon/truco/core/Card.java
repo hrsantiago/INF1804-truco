@@ -26,6 +26,7 @@ public class Card {
 	
 	private Suit m_suit;
 	private Value m_value;
+	private boolean m_isVisible = true;
 	
 	public Card(Value value, Suit suit) {
 		m_value = value;
@@ -38,6 +39,14 @@ public class Card {
 	
 	public Suit getSuit() {
 		return m_suit;
+	}
+	
+	public boolean isVisible() {
+		return m_isVisible;
+	}
+	
+	public void setVisible(boolean visible) {
+		m_isVisible = visible;
 	}
 	
 	public void dump() {

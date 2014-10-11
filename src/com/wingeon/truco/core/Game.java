@@ -37,6 +37,14 @@ public class Game {
 		return m_players[id];
 	}
 	
+	public Team getTeam(int id) {
+		return m_teams[id];
+	}
+	
+	public Card getTurn() {
+		return m_turn;
+	}
+	
 	private void startHand() {
 		m_teams[0].resetHandScore();
 		m_teams[1].resetHandScore();
@@ -54,6 +62,6 @@ public class Game {
 	}
 	
 	public static Card.Suit[] getSuitOrder() {
-		return new Card.Suit[]{Card.Suit.CLUBS, Card.Suit.HEARTS, Card.Suit.SPADES, Card.Suit.DIAMONDS};
+		return new Card.Suit[]{Card.Suit.DIAMONDS, Card.Suit.SPADES, Card.Suit.HEARTS, Card.Suit.CLUBS};
 	}
 }
