@@ -1,19 +1,13 @@
 package com.wingeon.truco.core;
 
-public class Player {
-	static int CARDS = 3;
+public abstract class Player {
+	public static int CARDS = 3;
 	
-	private Card m_cards[] = new Card[3];
-	private Card m_playedCard = null;
+	protected Card m_cards[] = new Card[3];
+	protected Card m_playedCard = null;
 	
-	public void playCard() {
-		for(int i = 0; i < CARDS; ++i) {
-			if(m_cards[i] != null) {
-				m_playedCard = m_cards[i];
-				m_cards[i] = null;
-			}
-		}
-	}
+	public abstract boolean isVirtual();
+	public abstract boolean isHuman();
 	
 	public void receiveCard(Card card) {
 		for(int i = 0; i < CARDS; ++i) {

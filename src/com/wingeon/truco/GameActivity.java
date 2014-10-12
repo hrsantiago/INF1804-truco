@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,23 +17,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wingeon.truco.core.Card;
-import com.wingeon.truco.core.Team;
 import com.wingeon.truco.core.Game;
 import com.wingeon.truco.core.Player;
+import com.wingeon.truco.core.PlayerHuman;
+import com.wingeon.truco.core.Team;
 
 public class GameActivity extends Activity {
-
 	private static String HELP_WEBSITE = "http://www.jogatina.com/regras-como-jogar-truco.html";
-	private Game m_game = new Game();
 	
-	private ImageView m_playersViews[][] = new ImageView[4][4];
+	private Handler m_handler = new Handler() {
+		@Override
+		public void handleMessage(Message message) { onHandleMessage(message); }
+	};
+	private Game m_game;
+	private ImageView m_playersViews[][] = new ImageView[Game.PLAYERS][4];
 	private ImageView m_turnView;
 	private TextView m_teamsView[] = new TextView[2];
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		System.out.println("onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
+		
+		m_game = new Game(new Messenger(m_handler));
 		
 		m_teamsView[0] = (TextView)findViewById(R.id.team0_score);
 		m_teamsView[1] = (TextView)findViewById(R.id.team1_score);
@@ -72,29 +82,35 @@ public class GameActivity extends Activity {
 	}
 	
 	@Override
+	protected void onDestroy() {
+		System.out.println("onDestroy" + m_game.getState());
+		m_game.interrupt();
+		m_game = null;
+	}
+	
+	@Override
 	protected void onStart() {
-		System.out.println("Start");
+		System.out.println("onStart" + m_game.getState());
 		super.onStart();
-		m_game.start();
-		
-		updatePlayer(0);
-		updatePlayer(1);
-		updatePlayer(2);
-		updatePlayer(3);
-		
+		m_game.setRunning(true);
+		if(m_game.getState() == Thread.State.NEW)
+			m_game.start();
+
+		updatePlayers();
 		updateTurn();
 		updateScore();
 	}
 
 	@Override
 	protected void onStop() {
-		System.out.println("End");
+		System.out.println("onStop" + m_game.getState());
 		super.onStop();
-		m_game.stop();
+		tryPauseGame();
 	}
 	
 	@Override
 	protected void onResume() {
+		System.out.println("onResume" + m_game.getState());
 		super.onResume();
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
@@ -102,6 +118,15 @@ public class GameActivity extends Activity {
 
 		TextView p1Name = (TextView)findViewById(R.id.player_0_name);
 		p1Name.setText(name);
+		
+		tryResumeGame();
+	}
+	
+	@Override
+	protected void onPause() {
+		System.out.println("onPause" + m_game.getState());
+		super.onPause();
+		tryPauseGame();
 	}
 	
 	@Override
@@ -129,13 +154,36 @@ public class GameActivity extends Activity {
 		}
 	}
 	
+	private void onHandleMessage(Message message) {
+		Game.Update update = Game.Update.values()[message.arg1];
+		switch(update) {
+		case PLAYER:
+			updatePlayer(message.arg2);
+			break;
+		case PLAYERS:
+			updatePlayers();
+			break;
+		case TURN:
+			updateTurn();
+			break;
+		case SCORE:
+			updateScore();
+			break;
+		}
+	}
+	
 	private void onCardClicked(int id) {
 		System.out.println(id);
+		PlayerHuman player = (PlayerHuman)m_game.getPlayer(0);
+		player.playCard(id);
+		synchronized(m_game) {
+			m_game.notify();
+		}
 	}
 	
 	private void updatePlayer(int id) {
 		Player player = m_game.getPlayer(id);
-		for(int i = 0; i < 3; ++i) {
+		for(int i = 0; i < Player.CARDS; ++i) {
 			ImageView imageView = m_playersViews[id][i];
 			Card card = player.getCard(i);
 			updateCard(imageView, card, id != 0);
@@ -143,6 +191,11 @@ public class GameActivity extends Activity {
 		
 		Card playedCard = player.getPlayedCard();
 		updateCard(m_playersViews[id][3], playedCard, false);
+	}
+	
+	private void updatePlayers() {
+		for(int i = 0; i < Game.PLAYERS; ++i)
+			updatePlayer(i);
 	}
 	
 	private void updateTurn() {
@@ -167,6 +220,27 @@ public class GameActivity extends Activity {
 				cardView.setImageResource(getCardResourceId(null));
 			else
 				cardView.setImageResource(getCardResourceId(card));
+		}
+	}
+	
+	private void tryPauseGame() {
+		if(m_game.getState() != Thread.State.WAITING) {
+			try {
+				synchronized(m_game) {
+					m_game.wait();
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void tryResumeGame() {
+		if(m_game.getState() == Thread.State.WAITING) {
+			synchronized(m_game) {
+				m_game.notify();
+			}
 		}
 	}
 	
