@@ -84,13 +84,15 @@ public class GameActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		System.out.println("onDestroy" + m_game.getState());
+		super.onDestroy();
+		m_game.setRunning(false);
 		m_game.interrupt();
 		m_game = null;
 	}
 	
 	@Override
 	protected void onStart() {
-		System.out.println("onStart" + m_game.getState());
+		System.out.println("onStart" + m_game.getState() + Thread.currentThread().getId());
 		super.onStart();
 		m_game.setRunning(true);
 		if(m_game.getState() == Thread.State.NEW)
@@ -105,7 +107,6 @@ public class GameActivity extends Activity {
 	protected void onStop() {
 		System.out.println("onStop" + m_game.getState());
 		super.onStop();
-		tryPauseGame();
 	}
 	
 	@Override
@@ -118,15 +119,12 @@ public class GameActivity extends Activity {
 
 		TextView p1Name = (TextView)findViewById(R.id.player_0_name);
 		p1Name.setText(name);
-		
-		tryResumeGame();
 	}
 	
 	@Override
 	protected void onPause() {
-		System.out.println("onPause" + m_game.getState());
+		System.out.println("onPause" + m_game.getState() + Thread.currentThread().getId());
 		super.onPause();
-		tryPauseGame();
 	}
 	
 	@Override
@@ -155,6 +153,10 @@ public class GameActivity extends Activity {
 	}
 	
 	private void onHandleMessage(Message message) {
+		System.out.println("onHandleMessage" + Thread.currentThread().getId());
+		if(m_game == null)
+			return;
+		
 		Game.Update update = Game.Update.values()[message.arg1];
 		switch(update) {
 		case PLAYER:
@@ -168,6 +170,8 @@ public class GameActivity extends Activity {
 			break;
 		case SCORE:
 			updateScore();
+			break;
+		case ROUND_WINNER:
 			break;
 		}
 	}
@@ -220,27 +224,6 @@ public class GameActivity extends Activity {
 				cardView.setImageResource(getCardResourceId(null));
 			else
 				cardView.setImageResource(getCardResourceId(card));
-		}
-	}
-	
-	private void tryPauseGame() {
-		if(m_game.getState() != Thread.State.WAITING) {
-			try {
-				synchronized(m_game) {
-					m_game.wait();
-				}
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private void tryResumeGame() {
-		if(m_game.getState() == Thread.State.WAITING) {
-			synchronized(m_game) {
-				m_game.notify();
-			}
 		}
 	}
 	

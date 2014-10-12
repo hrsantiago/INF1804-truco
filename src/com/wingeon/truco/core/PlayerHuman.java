@@ -21,6 +21,4 @@ public class PlayerHuman extends Player {
 		m_playedCard = m_cards[id];
 		m_cards[id] = null;
 	}
-
-	
 }

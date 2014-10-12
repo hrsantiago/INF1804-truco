@@ -5,6 +5,7 @@ public abstract class Player {
 	
 	protected Card m_cards[] = new Card[3];
 	protected Card m_playedCard = null;
+	protected Team m_team = null;
 	
 	public abstract boolean isVirtual();
 	public abstract boolean isHuman();
@@ -18,6 +19,11 @@ public abstract class Player {
 		}
 	}
 	
+	public void removeCards() {
+		for(int i = 0; i < CARDS; ++i)
+			m_cards[i] = null;
+	}
+	
 	public void removePlayedCard() {
 		m_playedCard = null;
 	}
@@ -28,5 +34,13 @@ public abstract class Player {
 	
 	public Card getPlayedCard() {
 		return m_playedCard;
+	}
+	
+	public void setTeam(Team team) {
+		m_team = team;
+	}
+	
+	public Team getTeam() {
+		return m_team;
 	}
 }

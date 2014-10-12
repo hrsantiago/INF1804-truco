@@ -15,19 +15,19 @@ public class PlayerVirtual extends Player {
 	}
 	
 	public void playFirstCard() {
+		try {
+			Thread.sleep(THINK_DURATION);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		for(int i = 0; i < CARDS; ++i) {
 			if(m_cards[i] != null) {
 				m_playedCard = m_cards[i];
 				m_cards[i] = null;
 				break;
 			}
-		}
-		
-		try {
-			Thread.sleep(THINK_DURATION);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }

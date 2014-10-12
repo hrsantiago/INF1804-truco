@@ -17,11 +17,14 @@ public class Deck {
 				m_cards.add(new Card(value, suit));
 			}
 		}
-		assert(m_cards.size() == 52);
 	}
 	
 	void shuffle(Random random) {
 		Collections.shuffle(m_cards, random);
+	}
+	
+	void insertCard(Card card) {
+		m_cards.add(card);
 	}
 	
 	Card removeFirstCard() {
