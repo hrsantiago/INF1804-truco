@@ -18,6 +18,7 @@ public class Game extends Thread {
 		START_ROUND,
 		FINISH_ROUND,
 		ROUND_WINNER,
+		CAN_CLOSE_CARD,
 	};
 	
 	public static int TEAMS = 2;
@@ -35,6 +36,7 @@ public class Game extends Thread {
 	private int m_currentPlayerId;
 	private int m_roundPlays;
 	private int m_handPlays;
+	private int m_lastHandFirstPlayer;
 	private boolean m_canLocalPlayCard;
 	
 	public Game(Messenger messenger) {
@@ -71,6 +73,7 @@ public class Game extends Thread {
 		m_currentPlayerId = 0;
 		m_roundPlays = 0;
 		m_handPlays = 0;
+		m_lastHandFirstPlayer = m_random.nextInt(PLAYERS);
 		m_canLocalPlayCard = false;
 		
 		super.start();
@@ -92,9 +95,11 @@ public class Game extends Thread {
 				Player player = m_players[m_currentPlayerId];
 				if(player.isHuman()) {
 					try {
+						emitUpdate(Update.CAN_CLOSE_CARD, (m_roundPlays == 1 || m_roundPlays == 2) ? 1 : 0, null);
 						m_canLocalPlayCard = true;
 						this.wait();
 						m_canLocalPlayCard = false;
+						emitUpdate(Update.CAN_CLOSE_CARD, 0, null);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -126,6 +131,8 @@ public class Game extends Thread {
 	public boolean playCard(int id, boolean closed) {
 		if(m_canLocalPlayCard) {
 			PlayerHuman player = (PlayerHuman)m_players[0];
+			if(m_roundPlays == 0 || m_roundPlays == 3)
+				closed = false;
 			player.playCard(id, closed);
 			return true;
 		}
@@ -161,6 +168,11 @@ public class Game extends Thread {
 		
 		m_turnCard = m_deck.removeFirstCard();
 		emitUpdate(Update.TURN, 0, null);
+		
+		m_currentPlayerId = m_lastHandFirstPlayer + 1;
+		if(m_currentPlayerId >= PLAYERS)
+			m_currentPlayerId = 0;
+		m_lastHandFirstPlayer = m_currentPlayerId;
 	}
 	
 	private void finishHand() {
@@ -207,7 +219,7 @@ public class Game extends Thread {
 	private boolean finishRound() {
 		emitUpdate(Update.FINISH_ROUND, 0, null);
 		
-		processWinner();
+		processRoundWinner();
 		
 		try {
 			sleep(FINISH_ROUND_DURATION);
@@ -234,7 +246,7 @@ public class Game extends Thread {
 		return handFinished;
 	}
 	
-	private void processWinner() {
+	private void processRoundWinner() {
 		Card.Suit[] aOrderSuit = getSuitOrder();
 		List<Card.Suit> listSuit = Arrays.asList(aOrderSuit);
 		
@@ -248,24 +260,25 @@ public class Game extends Thread {
 		
 		Card winnerCard = null;
 		for(int i = 0; i < PLAYERS; ++i) {
-			Player player = m_players[i];
-			Card card = player.getPlayedCard();
-			if(winnerCard == null)
-				winnerCard = card;
-			else {
-				if(winnerCard.getValue() == shackle && card.getValue() == shackle) {
-					int index = listSuit.indexOf(card.getSuit());
-					int winnerIndex = listSuit.indexOf(winnerCard.getSuit());
-					if(index > winnerIndex)
-						winnerCard = card;
-				}
-				else if(winnerCard.getValue() != shackle && card.getValue() == shackle)
+			Card card = m_players[i].getPlayedCard();
+			if(card.isVisible()) {
+				if(winnerCard == null)
 					winnerCard = card;
-				else if(winnerCard.getValue() != shackle && card.getValue() != shackle) {
-					int index = listValue.indexOf(card.getValue());
-					int winnerIndex = listValue.indexOf(winnerCard.getValue());
-					if(index > winnerIndex)
+				else {
+					if(winnerCard.getValue() == shackle && card.getValue() == shackle) {
+						int index = listSuit.indexOf(card.getSuit());
+						int winnerIndex = listSuit.indexOf(winnerCard.getSuit());
+						if(index > winnerIndex)
+							winnerCard = card;
+					}
+					else if(winnerCard.getValue() != shackle && card.getValue() == shackle)
 						winnerCard = card;
+					else if(winnerCard.getValue() != shackle && card.getValue() != shackle) {
+						int index = listValue.indexOf(card.getValue());
+						int winnerIndex = listValue.indexOf(winnerCard.getValue());
+						if(index > winnerIndex)
+							winnerCard = card;
+					}
 				}
 			}
 		}
@@ -280,6 +293,7 @@ public class Game extends Thread {
 				if(!winnerTeams.contains(team)) {
 					player.getTeam().addHandPoint();
 					winnerTeams.add(team);
+					m_currentPlayerId = i;
 				}
 				emitUpdate(Update.ROUND_WINNER, i, null);
 			}

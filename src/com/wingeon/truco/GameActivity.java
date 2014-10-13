@@ -36,6 +36,7 @@ public class GameActivity extends Activity {
 	private ImageView m_playersViews[][] = new ImageView[Game.PLAYERS][4];
 	private ImageView m_turnView;
 	private TextView m_teamsView[] = new TextView[2];
+	private Button m_trucoView;
 	private Button m_closeView;
 	private boolean m_cardClosed;
 	
@@ -70,6 +71,12 @@ public class GameActivity extends Activity {
 		m_playersViews[3][3] = (ImageView)findViewById(R.id.player_3_card);
 		
 		m_turnView = (ImageView)findViewById(R.id.card_turn);
+		
+		m_trucoView = (Button)findViewById(R.id.truco);
+		m_trucoView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) { onTrucoClicked(); }
+		});
 		
 		m_cardClosed = false;
 		m_closeView = (Button)findViewById(R.id.close);
@@ -181,7 +188,14 @@ public class GameActivity extends Activity {
 		case ROUND_WINNER:
 			processRoundWinner(message.arg2);
 			break;
+		case CAN_CLOSE_CARD:
+			updateCloseButton(message.arg2 != 0);
+			break;
 		}
+	}
+	
+	private void onTrucoClicked() {
+		
 	}
 	
 	private void onCardClicked(int id) {
@@ -232,6 +246,13 @@ public class GameActivity extends Activity {
 			else
 				cardView.setImageResource(getCardResourceId(card));
 		}
+	}
+	
+	private void updateCloseButton(boolean canClose) {
+		if(canClose)
+			m_closeView.setVisibility(View.VISIBLE);
+		else
+			m_closeView.setVisibility(View.INVISIBLE);
 	}
 	
 	private void processStartRound() {

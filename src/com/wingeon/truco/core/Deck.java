@@ -24,6 +24,7 @@ public class Deck {
 	}
 	
 	void insertCard(Card card) {
+		card.setVisible(true);
 		m_cards.add(card);
 	}
 	
