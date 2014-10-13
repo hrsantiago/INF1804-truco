@@ -3,6 +3,8 @@ package com.wingeon.truco;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,10 +36,11 @@ public class GameActivity extends Activity {
 	private ImageView m_playersViews[][] = new ImageView[Game.PLAYERS][4];
 	private ImageView m_turnView;
 	private TextView m_teamsView[] = new TextView[2];
+	private Button m_closeView;
+	private boolean m_cardClosed;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		System.out.println("onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
@@ -67,6 +71,19 @@ public class GameActivity extends Activity {
 		
 		m_turnView = (ImageView)findViewById(R.id.card_turn);
 		
+		m_cardClosed = false;
+		m_closeView = (Button)findViewById(R.id.close);
+		m_closeView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(!m_cardClosed)
+					m_closeView.setText(getResources().getString(R.string.open));
+				else
+					m_closeView.setText(getResources().getString(R.string.closed));
+				m_cardClosed = !m_cardClosed;
+			}
+		});
+		
 		m_playersViews[0][0].setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) { onCardClicked(0); }
@@ -83,7 +100,6 @@ public class GameActivity extends Activity {
 	
 	@Override
 	protected void onDestroy() {
-		System.out.println("onDestroy" + m_game.getState());
 		super.onDestroy();
 		m_game.setRunning(false);
 		m_game.interrupt();
@@ -92,7 +108,6 @@ public class GameActivity extends Activity {
 	
 	@Override
 	protected void onStart() {
-		System.out.println("onStart" + m_game.getState() + Thread.currentThread().getId());
 		super.onStart();
 		m_game.setRunning(true);
 		if(m_game.getState() == Thread.State.NEW)
@@ -102,16 +117,9 @@ public class GameActivity extends Activity {
 		updateTurn();
 		updateScore();
 	}
-
-	@Override
-	protected void onStop() {
-		System.out.println("onStop" + m_game.getState());
-		super.onStop();
-	}
 	
 	@Override
 	protected void onResume() {
-		System.out.println("onResume" + m_game.getState());
 		super.onResume();
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
@@ -119,12 +127,6 @@ public class GameActivity extends Activity {
 
 		TextView p1Name = (TextView)findViewById(R.id.player_0_name);
 		p1Name.setText(name);
-	}
-	
-	@Override
-	protected void onPause() {
-		System.out.println("onPause" + m_game.getState() + Thread.currentThread().getId());
-		super.onPause();
 	}
 	
 	@Override
@@ -153,7 +155,6 @@ public class GameActivity extends Activity {
 	}
 	
 	private void onHandleMessage(Message message) {
-		System.out.println("onHandleMessage" + Thread.currentThread().getId());
 		if(m_game == null)
 			return;
 		
@@ -171,17 +172,23 @@ public class GameActivity extends Activity {
 		case SCORE:
 			updateScore();
 			break;
+		case START_ROUND:
+			processStartRound();
+			break;
+		case FINISH_ROUND:
+			processFinishRound();
+			break;
 		case ROUND_WINNER:
+			processRoundWinner(message.arg2);
 			break;
 		}
 	}
 	
 	private void onCardClicked(int id) {
-		System.out.println(id);
-		PlayerHuman player = (PlayerHuman)m_game.getPlayer(0);
-		player.playCard(id);
-		synchronized(m_game) {
-			m_game.notify();
+		if(m_game.playCard(id, m_cardClosed)) {
+			synchronized(m_game) {
+				m_game.notify();
+			}
 		}
 	}
 	
@@ -225,6 +232,24 @@ public class GameActivity extends Activity {
 			else
 				cardView.setImageResource(getCardResourceId(card));
 		}
+	}
+	
+	private void processStartRound() {
+		for(int i = 0; i < Game.PLAYERS; ++i) {
+			ImageView cardView = m_playersViews[i][3];
+			cardView.setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
+		}
+	}
+	
+	private void processFinishRound() {
+		for(int i = 0; i < Game.PLAYERS; ++i) {
+			ImageView cardView = m_playersViews[i][3];
+			cardView.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+		}
+	}
+	
+	private void processRoundWinner(int id) {
+		m_playersViews[id][3].setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
 	}
 	
 	private int getCardResourceId(Card card) {

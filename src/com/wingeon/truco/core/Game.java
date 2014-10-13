@@ -15,12 +15,14 @@ public class Game extends Thread {
 		PLAYER,
 		TURN,
 		SCORE,
+		START_ROUND,
+		FINISH_ROUND,
 		ROUND_WINNER,
 	};
 	
 	public static int TEAMS = 2;
 	public static int PLAYERS = 4;
-	public static int FINISH_ROUND_DURATION = 1500;
+	public static int FINISH_ROUND_DURATION = 2000;
 	public static int FINISH_HAND_DURATION = 1500;
 	
 	private Messenger m_messenger = null;
@@ -33,6 +35,7 @@ public class Game extends Thread {
 	private int m_currentPlayerId;
 	private int m_roundPlays;
 	private int m_handPlays;
+	private boolean m_canLocalPlayCard;
 	
 	public Game(Messenger messenger) {
 		super();
@@ -68,6 +71,7 @@ public class Game extends Thread {
 		m_currentPlayerId = 0;
 		m_roundPlays = 0;
 		m_handPlays = 0;
+		m_canLocalPlayCard = false;
 		
 		super.start();
 	}
@@ -88,7 +92,9 @@ public class Game extends Thread {
 				Player player = m_players[m_currentPlayerId];
 				if(player.isHuman()) {
 					try {
+						m_canLocalPlayCard = true;
 						this.wait();
+						m_canLocalPlayCard = false;
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -115,6 +121,15 @@ public class Game extends Thread {
 					finishHand();
 			}
 		}
+	}
+	
+	public boolean playCard(int id, boolean closed) {
+		if(m_canLocalPlayCard) {
+			PlayerHuman player = (PlayerHuman)m_players[0];
+			player.playCard(id, closed);
+			return true;
+		}
+		return false;
 	}
 	
 	public void setRunning(boolean running) {
@@ -181,13 +196,17 @@ public class Game extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// TODO: check winner
 	}
 	
 	private void startRound() {
-		
+		emitUpdate(Update.START_ROUND, 0, null);
 	}
 	
 	private boolean finishRound() {
+		emitUpdate(Update.FINISH_ROUND, 0, null);
+		
 		processWinner();
 		
 		try {

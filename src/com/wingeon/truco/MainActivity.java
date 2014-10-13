@@ -15,6 +15,7 @@ public class MainActivity extends Activity {
 
 	private Button m_newGameButton;
 	private Button m_connectButton;
+	private Button m_statisticsButton;
 	private Button m_optionsButton;
 	
 	@Override
@@ -36,6 +37,15 @@ public class MainActivity extends Activity {
 		m_connectButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+			}
+		});
+		
+		m_statisticsButton = (Button)findViewById(R.id.statistics);
+		m_statisticsButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, StatisticsActivity.class);
+			    startActivity(intent);
 			}
 		});
 		

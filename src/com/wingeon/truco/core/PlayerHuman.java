@@ -17,8 +17,9 @@ public class PlayerHuman extends Player {
 		return m_isLocal;
 	}
 	
-	public void playCard(int id) {
+	public void playCard(int id, boolean closed) {
 		m_playedCard = m_cards[id];
+		m_playedCard.setVisible(!closed);
 		m_cards[id] = null;
 	}
 }

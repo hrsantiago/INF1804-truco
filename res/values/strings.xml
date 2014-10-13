@@ -4,6 +4,7 @@
     <string name="app_name">Truco</string>
     <string name="new_game">Novo Jogo</string>
     <string name="connect">Conectar</string>
+    <string name="statistics">Estatísticas</string>
     <string name="options">Opções</string>
     <string name="help">Ajuda</string>
     <string name="exit">Sair</string>
@@ -28,6 +29,10 @@
     <string name="twelve">Doze</string>
     <string name="open">Aberta</string>
     <string name="closed">Fechada</string>
+    
+    <string name="played_matches">Partidas Jogadas</string>
+    <string name="wins">Vitórias</string>
+    <string name="losses">Derrotas</string>
 
     <string-array name="TableColors">
         <item>Verde</item>
