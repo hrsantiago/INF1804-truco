@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wingeon.truco.core.Card;
 import com.wingeon.truco.core.Game;
@@ -191,6 +192,9 @@ public class GameActivity extends Activity {
 		case CAN_CLOSE_CARD:
 			updateCloseButton(message.arg2 != 0);
 			break;
+		case FINISH_GAME:
+			processFinishGame(message.arg2 != 0);
+			break;
 		}
 	}
 	
@@ -271,6 +275,22 @@ public class GameActivity extends Activity {
 	
 	private void processRoundWinner(int id) {
 		m_playersViews[id][3].setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
+	}
+	
+	private void processFinishGame(boolean won) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putInt("played_matches", prefs.getInt("played_matches", 0) + 1);
+		if(won) {
+			editor.putInt("wins", prefs.getInt("wins", 0) + 1);
+			Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_won), Toast.LENGTH_LONG).show();
+		}
+		else {
+			editor.putInt("losses", prefs.getInt("losses", 0) + 1);
+			Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_lost), Toast.LENGTH_LONG).show();
+		}
+		editor.commit();
+		finish();
 	}
 	
 	private int getCardResourceId(Card card) {

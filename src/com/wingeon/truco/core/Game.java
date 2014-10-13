@@ -19,10 +19,12 @@ public class Game extends Thread {
 		FINISH_ROUND,
 		ROUND_WINNER,
 		CAN_CLOSE_CARD,
+		FINISH_GAME,
 	};
 	
 	public static int TEAMS = 2;
 	public static int PLAYERS = 4;
+	public static int MAX_POINTS = 12;
 	public static int FINISH_ROUND_DURATION = 2000;
 	public static int FINISH_HAND_DURATION = 1500;
 	
@@ -202,14 +204,18 @@ public class Game extends Thread {
 		
 		m_handPlays = 0;
 		
-		try {
-			sleep(FINISH_HAND_DURATION);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(m_teams[0].getScore() >= MAX_POINTS || m_teams[1].getScore() >= MAX_POINTS) {
+			setRunning(false);
+			emitUpdate(Update.FINISH_GAME, m_teams[0].getScore() > m_teams[1].getScore() ? 1 : 0, null);
 		}
-		
-		// TODO: check winner
+		else {
+			try {
+				sleep(FINISH_HAND_DURATION);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void startRound() {

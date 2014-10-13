@@ -33,6 +33,8 @@
     <string name="played_matches">Partidas Jogadas</string>
     <string name="wins">Vitórias</string>
     <string name="losses">Derrotas</string>
+    <string name="you_won">Você venceu!</string>
+    <string name="you_lost">Você perdeu!</string>
 
     <string-array name="TableColors">
         <item>Verde</item>
