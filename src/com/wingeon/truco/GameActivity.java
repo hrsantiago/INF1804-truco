@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.wingeon.truco.core.Card;
 import com.wingeon.truco.core.Game;
 import com.wingeon.truco.core.Player;
-import com.wingeon.truco.core.PlayerHuman;
 import com.wingeon.truco.core.Team;
 
 public class GameActivity extends Activity {
@@ -192,6 +191,9 @@ public class GameActivity extends Activity {
 		case CAN_CLOSE_CARD:
 			updateCloseButton(message.arg2 != 0);
 			break;
+		case TRUCO:
+			updateTrucoButton(message.arg2, (Team)message.obj);
+			break;
 		case FINISH_GAME:
 			processFinishGame(message.arg2 != 0);
 			break;
@@ -199,7 +201,7 @@ public class GameActivity extends Activity {
 	}
 	
 	private void onTrucoClicked() {
-		
+		m_game.askTruco(0);
 	}
 	
 	private void onCardClicked(int id) {
@@ -257,6 +259,24 @@ public class GameActivity extends Activity {
 			m_closeView.setVisibility(View.VISIBLE);
 		else
 			m_closeView.setVisibility(View.INVISIBLE);
+	}
+	
+	private void updateTrucoButton(int points, Team team) {
+		if(points == 1)
+			m_trucoView.setText(R.string.truco);
+		else if(points == 3)
+			m_trucoView.setText(R.string.six);
+		else if(points == 6)
+			m_trucoView.setText(R.string.nine);
+		else if(points == 9)
+			m_trucoView.setText(R.string.twelve);
+		else
+			m_trucoView.setVisibility(View.INVISIBLE);
+
+		if(team == m_game.getPlayer(0).getTeam())
+			m_trucoView.setVisibility(View.INVISIBLE);
+		else
+			m_trucoView.setVisibility(View.VISIBLE);
 	}
 	
 	private void processStartRound() {

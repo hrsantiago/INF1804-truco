@@ -19,6 +19,7 @@ public class Game extends Thread {
 		FINISH_ROUND,
 		ROUND_WINNER,
 		CAN_CLOSE_CARD,
+		TRUCO,
 		FINISH_GAME,
 	};
 	
@@ -40,6 +41,8 @@ public class Game extends Thread {
 	private int m_handPlays;
 	private int m_lastHandFirstPlayer;
 	private boolean m_canLocalPlayCard;
+	private int m_handPoints;
+	private Team m_lastTrucoTeam;
 	
 	public Game(Messenger messenger) {
 		super();
@@ -77,6 +80,7 @@ public class Game extends Thread {
 		m_handPlays = 0;
 		m_lastHandFirstPlayer = m_random.nextInt(PLAYERS);
 		m_canLocalPlayCard = false;
+		m_lastTrucoTeam = null;
 		
 		super.start();
 	}
@@ -161,7 +165,25 @@ public class Game extends Thread {
 		return m_turnCard;
 	}
 	
+	public void askTruco(int playerId) {
+		if(m_currentPlayerId == playerId) {
+			Player player = m_players[playerId];
+			if(player.getTeam() != m_lastTrucoTeam) {
+				if(m_handPoints == 1)
+					m_handPoints = 3;
+				else if(m_handPoints < 12)
+					m_handPoints += 3;
+			}
+			m_lastTrucoTeam = player.getTeam();
+			emitUpdate(Update.TRUCO, m_handPoints, m_lastTrucoTeam);
+		}
+	}
+	
 	private void startHand() {
+		m_handPoints = 1;
+		m_lastTrucoTeam = null;
+		emitUpdate(Update.TRUCO, m_handPoints, m_lastTrucoTeam);
+		
 		for(int i = 0; i < Player.CARDS; ++i) {
 			for(int p = 0; p < PLAYERS; ++p)
 				m_players[p].receiveCard(m_deck.removeFirstCard());
@@ -179,9 +201,9 @@ public class Game extends Thread {
 	
 	private void finishHand() {
 		if(m_teams[0].getHandScore() > m_teams[1].getHandScore())
-			m_teams[0].addPoint();
+			m_teams[0].addPoints(m_handPoints);
 		else if(m_teams[1].getHandScore() > m_teams[0].getHandScore())
-			m_teams[1].addPoint();
+			m_teams[1].addPoints(m_handPoints);
 		
 		m_teams[0].resetHandScore();
 		m_teams[1].resetHandScore();

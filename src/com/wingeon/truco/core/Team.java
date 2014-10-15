@@ -17,8 +17,8 @@ public class Team {
 		m_handScore = 0;
 	}
 	
-	public void addPoint() {
-		m_score += 1;
+	public void addPoints(int points) {
+		m_score += points;
 	}
 	
 	public int getScore() {
