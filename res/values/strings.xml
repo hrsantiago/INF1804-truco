@@ -3,7 +3,8 @@
 
     <string name="app_name">Truco</string>
     <string name="new_game">Novo Jogo</string>
-    <string name="connect">Conectar</string>
+    <string name="connect_bluetooth">Conectar bluetooth</string>
+    <string name="host_bluetooth">Criar bluetooth</string>
     <string name="statistics">Estatísticas</string>
     <string name="options">Opções</string>
     <string name="help">Ajuda</string>
@@ -35,6 +36,10 @@
     <string name="losses">Derrotas</string>
     <string name="you_won">Você venceu!</string>
     <string name="you_lost">Você perdeu!</string>
+    
+    <string name="select_host">Selecione um dispositivo para se conectar:</string>
+    <string name="refresh">Atualizar</string>
+    <string name="start">Iniciar</string>
 
     <string-array name="TableColors">
         <item>Verde</item>
