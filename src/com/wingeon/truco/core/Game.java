@@ -107,8 +107,7 @@ public class Game extends Thread {
 						m_canLocalPlayCard = false;
 						emitUpdate(Update.CAN_CLOSE_CARD, 0, null);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						return;
 					}
 				}
 				else {
@@ -233,10 +232,7 @@ public class Game extends Thread {
 		else {
 			try {
 				sleep(FINISH_HAND_DURATION);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} catch (InterruptedException e) {}
 		}
 	}
 	
@@ -251,10 +247,7 @@ public class Game extends Thread {
 		
 		try {
 			sleep(FINISH_ROUND_DURATION);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (InterruptedException e) {}
 		
 		for(int i = 0; i < PLAYERS; ++i) {
 			Player player = m_players[i];

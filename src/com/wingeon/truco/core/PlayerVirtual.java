@@ -17,10 +17,7 @@ public class PlayerVirtual extends Player {
 	public void playFirstCard() {
 		try {
 			Thread.sleep(THINK_DURATION);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (InterruptedException e) {} // play a card anyway
 
 		for(int i = 0; i < CARDS; ++i) {
 			if(m_cards[i] != null) {
