@@ -1,5 +1,8 @@
 package com.wingeon.truco;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,7 +18,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class ConnectActivity extends Activity {
 	
@@ -23,13 +25,16 @@ public class ConnectActivity extends Activity {
 	private ListView m_listView;
 	private ArrayAdapter<String> m_arrayAdapter;
 	private BluetoothAdapter m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+	private Map<String, BluetoothDevice> m_devices;
 	
 	private final BroadcastReceiver m_receiver = new BroadcastReceiver() {
 	    public void onReceive(Context context, Intent intent) {
 	        String action = intent.getAction();
 	        if(BluetoothDevice.ACTION_FOUND.equals(action)) {
 	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	            m_arrayAdapter.add(device.getName() + "\n" + device.getAddress());
+	            String name = device.getName() + "\n" + device.getAddress();
+	            m_arrayAdapter.add(name);
+	            m_devices.put(name, device);
 	        }
 	    }
 	};
@@ -40,13 +45,15 @@ public class ConnectActivity extends Activity {
 		setContentView(R.layout.activity_connect);
 		
 		m_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
-
+		m_devices = new HashMap<String, BluetoothDevice>();
+		
 		m_refreshButton = (Button)findViewById(R.id.refresh_bt);
 		m_refreshButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				m_bluetoothAdapter.cancelDiscovery();
 				m_arrayAdapter.clear();
+				m_devices.clear();
 				m_bluetoothAdapter.startDiscovery();
 			}
 		});
@@ -58,8 +65,13 @@ public class ConnectActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	m_bluetoothAdapter.cancelDiscovery();
-            	//String itemValue = (String)m_listView.getItemAtPosition(position);
-            	//String id = itemValue;
+            	String itemValue = (String)m_listView.getItemAtPosition(position);
+            	BluetoothDevice device = m_devices.get(itemValue);
+
+            	Intent intent = new Intent(ConnectActivity.this, RoomActivity.class);
+				intent.putExtra("type", "guest");
+				intent.putExtra("device", device);
+				startActivity(intent);
             }
 
        }); 
@@ -78,6 +90,7 @@ public class ConnectActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		m_arrayAdapter.clear();
+		m_devices.clear();
 		m_bluetoothAdapter.startDiscovery();
 	}
 	

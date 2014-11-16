@@ -52,9 +52,9 @@ public class MainActivity extends Activity
 		m_hostButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-				discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, DISCOVERABLE_DURATION);
-				startActivityForResult(discoverableIntent, REQUEST_ENABLE_BT_DISCOVER_HOST);
+				Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+				intent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, DISCOVERABLE_DURATION);
+				startActivityForResult(intent, REQUEST_ENABLE_BT_DISCOVER_HOST);
 			}
 		});
 
@@ -109,6 +109,7 @@ public class MainActivity extends Activity
 		else if(requestCode == REQUEST_ENABLE_BT_DISCOVER_HOST) {
 			if(resultCode != RESULT_CANCELED) {
 				Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+				intent.putExtra("type", "host");
 				startActivity(intent);
 			}
 		}
