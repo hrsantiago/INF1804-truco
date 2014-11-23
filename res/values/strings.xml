@@ -16,6 +16,7 @@
     <string name="player_1">Jogador 2</string>
     <string name="player_2">Jogador 3</string>
     <string name="player_3">Jogador 4</string>
+    <string name="player_virtual">Jogador Virtual</string>
     <string name="team">Time</string>
     <string name="team_0">Time 1</string>
     <string name="team_1">Time 2</string>
@@ -42,6 +43,10 @@
     <string name="select_team">Selecione seu Time</string>
     <string name="join">Entrar</string>
     <string name="start">Iniciar</string>
+    
+    <string name="waiting_players">Esperando jogadores...</string>
+    <string name="connecting">Conectando...</string>
+    <string name="connected">Conectado!</string>
 
     <string-array name="TableColors">
         <item>Verde</item>

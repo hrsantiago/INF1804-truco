@@ -36,7 +36,7 @@ public class BluetoothServer extends Thread {
 			}
 			if (socket != null) {
 				System.out.println("Someone connected!");
-				//manageConnectedSocket(socket);
+				ConnectionManager.getInstance().connectedBluetooth(socket, socket.getRemoteDevice());
 			}
 		}
 	}

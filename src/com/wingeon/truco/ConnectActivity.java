@@ -69,6 +69,7 @@ public class ConnectActivity extends Activity {
             	BluetoothDevice device = m_devices.get(itemValue);
 
             	Intent intent = new Intent(ConnectActivity.this, RoomActivity.class);
+            	intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
 				intent.putExtra("type", "guest");
 				intent.putExtra("device", device);
 				startActivity(intent);

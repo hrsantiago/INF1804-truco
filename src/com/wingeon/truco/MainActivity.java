@@ -103,12 +103,14 @@ public class MainActivity extends Activity
 		if(requestCode == REQUEST_ENABLE_BT_CONNECT) {
 			if(resultCode == RESULT_OK) {
 				Intent intent = new Intent(MainActivity.this, ConnectActivity.class);
+				intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
 				startActivity(intent);
 			}
 		}
 		else if(requestCode == REQUEST_ENABLE_BT_DISCOVER_HOST) {
 			if(resultCode != RESULT_CANCELED) {
 				Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+				intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
 				intent.putExtra("type", "host");
 				startActivity(intent);
 			}

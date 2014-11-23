@@ -44,8 +44,7 @@ public class BluetoothConnect extends Thread {
 		}
 
 		System.out.println("Connected!");
-		// Do work to manage the connection (in a separate thread)
-		//manageConnectedSocket(mmSocket);
+		ConnectionManager.getInstance().connectedBluetooth(mmSocket, mmDevice);
 	}
 
 	/** Will cancel an in-progress connection, and close the socket */

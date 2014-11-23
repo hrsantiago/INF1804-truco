@@ -10,8 +10,12 @@ public class BluetoothConnection extends Thread {
 	private final BluetoothSocket mmSocket;
 	private final InputStream mmInStream;
 	private final OutputStream mmOutStream;
+	private int m_id;
+	static int idGenerator = 0;
 
 	public BluetoothConnection(BluetoothSocket socket) {
+		m_id = idGenerator++;
+
 		mmSocket = socket;
 		InputStream tmpIn = null;
 		OutputStream tmpOut = null;
@@ -37,10 +41,8 @@ public class BluetoothConnection extends Thread {
 				// Read from the InputStream
 				bytes = mmInStream.read(buffer);
 				// Send the obtained bytes to the UI activity
-				
-				
-				
-				//mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+
+				ConnectionManager.getInstance().receivedBytes(m_id, bytes, buffer);
 			} catch (IOException e) {
 				break;
 			}
@@ -48,9 +50,10 @@ public class BluetoothConnection extends Thread {
 	}
 
 	/* Call this from the main activity to send data to the remote device */
-	public void write(byte[] bytes) {
+	public void write(byte[] buffer) {
 		try {
-			mmOutStream.write(bytes);
+			mmOutStream.write(buffer);
+			ConnectionManager.getInstance().sentBytes(m_id, buffer);
 		} catch (IOException e) { }
 	}
 
@@ -59,5 +62,9 @@ public class BluetoothConnection extends Thread {
 		try {
 			mmSocket.close();
 		} catch (IOException e) { }
+	}
+	
+	public int getConnectionId() {
+		return m_id;
 	}
 }
