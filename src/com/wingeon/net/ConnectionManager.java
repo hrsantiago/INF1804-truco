@@ -12,6 +12,8 @@ public class ConnectionManager {
 	public static final int MESSAGE_READ = 0;
 	public static final int MESSAGE_WRITE = 1;
 	public static final int MESSAGE_CONNECTED = 2;
+	public static final int MESSAGE_CONNECT_FAILED = 3;
+	public static final int MESSAGE_CONNECTION_LOST = 4;
 	
 	private ConnectionManager() {}
 	
@@ -30,6 +32,14 @@ public class ConnectionManager {
 			BluetoothConnection connection = entry.getValue();
 			connection.write(buffer);
 		}
+	}
+	
+	public void closeAll() {
+		for(Map.Entry<Integer, BluetoothConnection> entry : m_connections.entrySet()) {
+			BluetoothConnection connection = entry.getValue();
+			connection.cancel();
+		}
+		m_connections.clear();
 	}
 	
 	public synchronized void setHandler(Handler handler) {
@@ -57,5 +67,16 @@ public class ConnectionManager {
 	public synchronized void sentBytes(int id, byte[] buffer) {
 		if(m_handler != null)
 			m_handler.obtainMessage(MESSAGE_WRITE, id, -1, buffer).sendToTarget();
+	}
+	
+	public synchronized void connectFailed() {
+		if(m_handler != null)
+			m_handler.obtainMessage(MESSAGE_CONNECT_FAILED, -1, -1, null).sendToTarget();
+	}
+	
+	public synchronized void connectionLost(int id) {
+		m_connections.remove(id);
+		if(m_handler != null)
+			m_handler.obtainMessage(MESSAGE_CONNECTION_LOST, id, -1, null).sendToTarget();
 	}
 }

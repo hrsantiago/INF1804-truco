@@ -14,8 +14,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wingeon.net.BluetoothConnect;
 import com.wingeon.net.BluetoothConnection;
@@ -66,6 +68,8 @@ public class RoomActivity extends Activity {
 			@Override
 			public void onClick(View v) { sendStartGame(); }
 		});
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 	
 	@Override
@@ -75,6 +79,7 @@ public class RoomActivity extends Activity {
 	
 	@Override
 	protected void onStart() {
+		System.out.println("le start");
 		for(int i = 0; i < 4; ++i) {
 			m_slots[i] = new PlayerSlot(getResources().getString(R.string.player_virtual), true);
 			m_joinButtons[i].setVisibility(View.INVISIBLE);
@@ -107,6 +112,9 @@ public class RoomActivity extends Activity {
 	
 	@Override
 	protected void onStop() {
+		System.out.println("le stop");
+		ConnectionManager.getInstance().setHandler(null);
+		
 		if(m_server != null) {
 			m_server.cancel();
 			m_server = null;
@@ -134,6 +142,16 @@ public class RoomActivity extends Activity {
             	processRead(msg.arg1, msg.arg2, (byte[])msg.obj);
             	break;
             case ConnectionManager.MESSAGE_WRITE:
+            	break;
+            case ConnectionManager.MESSAGE_CONNECT_FAILED:
+            	Toast.makeText(getApplicationContext(), getResources().getString(R.string.connect_fail), Toast.LENGTH_SHORT).show();
+            	finish();
+            	break;
+            case ConnectionManager.MESSAGE_CONNECTION_LOST:
+            	processPlayerLeave(msg.arg1);
+            	break;
+            default:
+            	System.out.println("Unknown handler message: " + msg.what);
             	break;
         	}
         }
@@ -242,6 +260,20 @@ public class RoomActivity extends Activity {
 		updateSlots();
 	}
 	
+	private void processPlayerLeave(int id) {
+		for(int i = 0; i < 4; ++i) {
+			PlayerSlot slot = m_slots[i];
+			if(slot.connectionId == id) {
+				slot.name = getResources().getString(R.string.player_virtual);
+				slot.virtual = true;
+				slot.connectionId = -1;
+				break;
+			}
+		}
+		sendSlots();
+		updateSlots();
+	}
+	
 	private void processStartGame() {
 		Intent intent = new Intent(RoomActivity.this, GameActivity.class);
 		intent.putExtra("online", true);
@@ -252,6 +284,7 @@ public class RoomActivity extends Activity {
 		}
 		m_connection = null;
 		startActivity(intent);
+		finish();
 	}
 	
 	private void updateSlots() {

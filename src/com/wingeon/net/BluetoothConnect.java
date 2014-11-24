@@ -35,7 +35,9 @@ public class BluetoothConnect extends Thread {
 			// until it succeeds or throws an exception
 			mmSocket.connect();
 		} catch (IOException connectException) {
+			
 			System.out.println("Could not connect: " + connectException.getMessage());
+			ConnectionManager.getInstance().connectFailed();
 			// Unable to connect; close the socket and get out
 			try {
 				mmSocket.close();

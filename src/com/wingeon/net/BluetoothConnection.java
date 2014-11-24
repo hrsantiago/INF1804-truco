@@ -44,6 +44,7 @@ public class BluetoothConnection extends Thread {
 
 				ConnectionManager.getInstance().receivedBytes(m_id, bytes, buffer);
 			} catch (IOException e) {
+				ConnectionManager.getInstance().connectionLost(m_id);
 				break;
 			}
 		}

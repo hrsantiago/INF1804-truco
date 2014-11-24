@@ -47,6 +47,7 @@
     <string name="waiting_players">Esperando jogadores...</string>
     <string name="connecting">Conectando...</string>
     <string name="connected">Conectado!</string>
+    <string name="connect_fail">Não foi possível conectar.</string>
 
     <string-array name="TableColors">
         <item>Verde</item>
