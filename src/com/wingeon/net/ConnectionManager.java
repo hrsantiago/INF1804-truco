@@ -34,6 +34,14 @@ public class ConnectionManager {
 		}
 	}
 	
+	public void broadcastExcept(int id, byte[] buffer) {
+		for(Map.Entry<Integer, BluetoothConnection> entry : m_connections.entrySet()) {
+			BluetoothConnection connection = entry.getValue();
+			if(connection.getConnectionId() != id)
+				connection.write(buffer);
+		}
+	}
+	
 	public void closeAll() {
 		for(Map.Entry<Integer, BluetoothConnection> entry : m_connections.entrySet()) {
 			BluetoothConnection connection = entry.getValue();

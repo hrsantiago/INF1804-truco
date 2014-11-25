@@ -33,7 +33,7 @@ public class RoomActivity extends Activity {
 		}
 		String name;
 		boolean virtual;
-		boolean local = false;;
+		boolean local = false;
 		int connectionId = -1;
 	}
 	
@@ -79,12 +79,12 @@ public class RoomActivity extends Activity {
 	
 	@Override
 	protected void onStart() {
-		System.out.println("le start");
 		for(int i = 0; i < 4; ++i) {
 			m_slots[i] = new PlayerSlot(getResources().getString(R.string.player_virtual), true);
 			m_joinButtons[i].setVisibility(View.INVISIBLE);
 		}
 		
+		ConnectionManager.getInstance().closeAll();
 		ConnectionManager.getInstance().setHandler(m_handler);
 		
 		Intent intent = getIntent();
@@ -112,9 +112,6 @@ public class RoomActivity extends Activity {
 	
 	@Override
 	protected void onStop() {
-		System.out.println("le stop");
-		ConnectionManager.getInstance().setHandler(null);
-		
 		if(m_server != null) {
 			m_server.cancel();
 			m_server = null;
@@ -148,7 +145,7 @@ public class RoomActivity extends Activity {
             	finish();
             	break;
             case ConnectionManager.MESSAGE_CONNECTION_LOST:
-            	processPlayerLeave(msg.arg1);
+            	processConnectionLost(msg.arg1);
             	break;
             default:
             	System.out.println("Unknown handler message: " + msg.what);
@@ -162,6 +159,15 @@ public class RoomActivity extends Activity {
 			m_connection = connection;
 			m_status.setText(R.string.connected);
 			sendName();
+		}
+	}
+	
+	private void processConnectionLost(int id) {
+		if(isHost())
+			processPlayerLeave(id);
+		else {
+			Toast.makeText(getApplicationContext(), getResources().getString(R.string.connection_lost), Toast.LENGTH_SHORT).show();
+			finish();
 		}
 	}
 	
@@ -183,6 +189,7 @@ public class RoomActivity extends Activity {
 				int len = buffer[index++];
 				byte[] slotNameByte = Arrays.copyOfRange(buffer, index, index+len);
 				index += len;
+				m_slots[i].virtual = buffer[index++] != 0 ? true : false;;
 				try {
 					m_slots[i].name = new String(slotNameByte, "UTF-8");
 				}
@@ -191,7 +198,8 @@ public class RoomActivity extends Activity {
 			updateSlots();
 			break;
 		case 0x02: // start game
-			processStartGame();
+			long seed = buffer[1] | (buffer[2] << 8) | (buffer[3] << 16) | (buffer[4] << 24);
+			processStartGame(seed);
 			break;
 		}
 	}
@@ -227,6 +235,7 @@ public class RoomActivity extends Activity {
 				try {
 					stream.write(slot.name.getBytes());
 				} catch (IOException e) { e.printStackTrace(); }
+				stream.write(slot.virtual ? 1 : 0);
 			}
 			BluetoothConnection connection = ConnectionManager.getInstance().getConnection(slotBase.connectionId);
 			connection.write(stream.toByteArray());
@@ -236,8 +245,20 @@ public class RoomActivity extends Activity {
 	private void sendStartGame() {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		stream.write(2);
+		
+		long seed = System.currentTimeMillis();
+		byte a = (byte)(seed & 0xff);
+		byte b = (byte)((seed >> 8) & 0xff);
+		byte c = (byte)((seed >> 16) & 0xff);
+		byte d = (byte)((seed >> 24) & 0xff);
+		stream.write(a);
+		stream.write(b);
+		stream.write(c);
+		stream.write(d);
+		seed = a | b << 8 | c << 16 | d << 24;
+		
 		ConnectionManager.getInstance().broadcast(stream.toByteArray());
-		processStartGame();
+		processStartGame(seed);
 	}
 	
 	private String getName() {
@@ -274,14 +295,25 @@ public class RoomActivity extends Activity {
 		updateSlots();
 	}
 	
-	private void processStartGame() {
+	private void processStartGame(long seed) {
 		Intent intent = new Intent(RoomActivity.this, GameActivity.class);
 		intent.putExtra("online", true);
+		intent.putExtra("seed", seed);
 		for(int i = 0; i < 4; ++i) {
-			intent.putExtra("slot_name_" + i, m_slots[i].name);
-			intent.putExtra("slot_local_" + i, m_slots[i].local);
-			intent.putExtra("slot_id_" + i, m_slots[i].connectionId);
+			int playerId = i;
+			if(i == 1)
+				++playerId;
+			else if(i == 2)
+				--playerId;
+			
+			intent.putExtra("slot_name_" + playerId, m_slots[i].name);
+			intent.putExtra("slot_virtual_" + playerId, m_slots[i].virtual);
+			intent.putExtra("slot_id_" + playerId, m_slots[i].connectionId);
+			
+			if(m_slots[i].local)
+				intent.putExtra("slot_id_local", playerId);
 		}
+		m_connect = null;
 		m_connection = null;
 		startActivity(intent);
 		finish();

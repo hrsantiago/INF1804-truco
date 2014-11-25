@@ -1,5 +1,7 @@
 package com.wingeon.truco;
 
+import java.io.ByteArrayOutputStream;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,11 +17,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wingeon.net.BluetoothConnection;
+import com.wingeon.net.ConnectionManager;
 import com.wingeon.truco.core.Card;
 import com.wingeon.truco.core.Game;
 import com.wingeon.truco.core.Player;
@@ -32,8 +37,23 @@ public class GameActivity extends Activity {
 		@Override
 		public void handleMessage(Message message) { onHandleMessage(message); }
 	};
+	
+	private Handler m_connectionHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+            case ConnectionManager.MESSAGE_READ:
+            	processRead(msg.arg1, msg.arg2, (byte[])msg.obj);
+            	break;
+			case ConnectionManager.MESSAGE_CONNECTION_LOST:
+				finish();
+				break;
+			}
+		}
+	};
+	
 	private Game m_game;
-	private ImageView m_playersViews[][] = new ImageView[Game.PLAYERS][4];
+	private ImageView m_playersViews[][] = new ImageView[Game.PLAYERS][5];
+	private TextView m_playersNames[] = new TextView[Game.PLAYERS];
 	private ImageView m_turnView;
 	private TextView m_teamsView[] = new TextView[2];
 	private Button m_trucoView;
@@ -49,6 +69,11 @@ public class GameActivity extends Activity {
 		
 		m_teamsView[0] = (TextView)findViewById(R.id.team0_score);
 		m_teamsView[1] = (TextView)findViewById(R.id.team1_score);
+		
+		m_playersNames[0] = (TextView)findViewById(R.id.player_0_name);
+		m_playersNames[1] = (TextView)findViewById(R.id.player_1_name);
+		m_playersNames[2] = (TextView)findViewById(R.id.player_2_name);
+		m_playersNames[3] = (TextView)findViewById(R.id.player_3_name);
 		
 		m_playersViews[0][0] = (ImageView)findViewById(R.id.player_0_card_1);
 		m_playersViews[0][1] = (ImageView)findViewById(R.id.player_0_card_2);
@@ -103,6 +128,8 @@ public class GameActivity extends Activity {
 			@Override
 			public void onClick(View v) { onCardClicked(2); }
 		});
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 	
 	@Override
@@ -116,9 +143,44 @@ public class GameActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		
+		ConnectionManager.getInstance().setHandler(m_connectionHandler);
+		
+		Intent intent = getIntent();
+		long seed = intent.getLongExtra("seed", System.currentTimeMillis());
+		int localId = intent.getIntExtra("slot_id_local", 0);
+		
+		boolean slotsVirtual[] = new boolean[Game.PLAYERS];
+		int slotsConnectionId[] = new int[Game.PLAYERS];
+		boolean online = intent.getBooleanExtra("online", false);
+		if(online) {
+			for(int i = 0; i < Game.PLAYERS; ++i) {
+				int playerId = i - localId;
+				if(playerId < 0)
+					playerId += Game.PLAYERS;
+				
+				String name = intent.getStringExtra("slot_name_" + i);
+				m_playersNames[playerId].setText(name);
+				slotsVirtual[i] = intent.getBooleanExtra("slot_virtual_" + i, false);
+				slotsConnectionId[i] = intent.getIntExtra("slot_id_" + i, -1);
+			}
+		}
+		else {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+			String name = prefs.getString("name", getResources().getString(R.string.player_0));
+			m_playersNames[0].setText(name);
+			m_playersNames[1].setText(getResources().getString(R.string.player_1));
+			m_playersNames[2].setText(getResources().getString(R.string.player_2));
+			m_playersNames[3].setText(getResources().getString(R.string.player_3));
+			slotsVirtual[0] = false;
+			slotsVirtual[1] = true;
+			slotsVirtual[2] = true;
+			slotsVirtual[3] = true;
+		}
+		
 		m_game.setRunning(true);
 		if(m_game.getState() == Thread.State.NEW)
-			m_game.start();
+			m_game.startGame(seed, localId, slotsVirtual, slotsConnectionId);
 
 		updatePlayers();
 		updateTurn();
@@ -128,12 +190,6 @@ public class GameActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-		String name = prefs.getString("name", getResources().getString(R.string.player_0));
-
-		TextView p1Name = (TextView)findViewById(R.id.player_0_name);
-		p1Name.setText(name);
 	}
 	
 	@Override
@@ -206,6 +262,10 @@ public class GameActivity extends Activity {
 	
 	private void onCardClicked(int id) {
 		if(m_game.playCard(id, m_cardClosed)) {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			stream.write(0);
+			stream.write(id);
+			ConnectionManager.getInstance().broadcast(stream.toByteArray());
 			synchronized(m_game) {
 				m_game.notify();
 			}
@@ -213,15 +273,19 @@ public class GameActivity extends Activity {
 	}
 	
 	private void updatePlayer(int id) {
+		int playerId = id - getLocalId();
+		if(playerId < 0)
+			playerId += Game.PLAYERS;
+		
 		Player player = m_game.getPlayer(id);
 		for(int i = 0; i < Player.CARDS; ++i) {
-			ImageView imageView = m_playersViews[id][i];
+			ImageView imageView = m_playersViews[playerId][i];
 			Card card = player.getCard(i);
-			updateCard(imageView, card, id != 0);
+			updateCard(imageView, card, id != getLocalId());
 		}
 		
 		Card playedCard = player.getPlayedCard();
-		updateCard(m_playersViews[id][3], playedCard, false);
+		updateCard(m_playersViews[playerId][3], playedCard, false);
 	}
 	
 	private void updatePlayers() {
@@ -294,7 +358,11 @@ public class GameActivity extends Activity {
 	}
 	
 	private void processRoundWinner(int id) {
-		m_playersViews[id][3].setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
+		int playerId = id - getLocalId();
+		if(playerId < 0)
+			playerId += Game.PLAYERS;
+		
+		m_playersViews[playerId][3].setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
 	}
 	
 	private void processFinishGame(boolean won) {
@@ -311,6 +379,25 @@ public class GameActivity extends Activity {
 		}
 		editor.commit();
 		finish();
+	}
+	
+	private void processRead(int id, int bytes, byte[] buffer) {
+		int opcode = buffer[0];
+		switch(opcode) {
+		case 0x00: // card
+			ConnectionManager.getInstance().broadcastExcept(id, buffer);
+			if(m_game.playGuestCard(buffer[1], m_cardClosed)) {
+				synchronized(m_game) {
+					m_game.notify();
+				}
+			}
+			break;
+		}
+	}
+	
+	private int getLocalId() {
+		Intent intent = getIntent();
+		return intent.getIntExtra("slot_id_local", 0);
 	}
 	
 	private int getCardResourceId(Card card) {

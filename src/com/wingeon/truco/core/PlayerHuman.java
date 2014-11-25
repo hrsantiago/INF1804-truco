@@ -3,6 +3,10 @@ package com.wingeon.truco.core;
 public class PlayerHuman extends Player {
 	private boolean m_isLocal = true;
 	
+	public PlayerHuman(boolean isLocal) {
+		m_isLocal = isLocal;
+	}
+	
 	@Override
 	public boolean isVirtual() {
 		return false;

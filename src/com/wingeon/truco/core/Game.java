@@ -41,6 +41,7 @@ public class Game extends Thread {
 	private int m_handPlays;
 	private int m_lastHandFirstPlayer;
 	private boolean m_canLocalPlayCard;
+	private boolean m_canGuestPlayCard;
 	private int m_handPoints;
 	private Team m_lastTrucoTeam;
 	
@@ -49,22 +50,20 @@ public class Game extends Thread {
 		m_messenger = messenger;
 	}
 	
-	@Override
-	public void start() {
+	public void startGame(long seed, int localId, boolean slotsVirtual[], int slotsConnectionId[]) {
 		m_random = new Random();
-		//m_random.setSeed(0);
+		m_random.setSeed(seed);
 		
 		m_teams[0] = new Team();
 		m_teams[1] = new Team();
 		
-		m_players[0] = new PlayerHuman();
-		m_players[0].setTeam(m_teams[0]);
-		m_players[1] = new PlayerVirtual();
-		m_players[1].setTeam(m_teams[1]);
-		m_players[2] = new PlayerVirtual();
-		m_players[2].setTeam(m_teams[0]);
-		m_players[3] = new PlayerVirtual();
-		m_players[3].setTeam(m_teams[1]);
+		for(int i = 0; i < PLAYERS; ++i) {
+			if(slotsVirtual[i])
+				m_players[i] = new PlayerVirtual();
+			else
+				m_players[i] = new PlayerHuman(i == localId);
+			m_players[i].setTeam(m_teams[i % 2]);
+		}
 		
 		m_deck = new Deck();
 		m_deck.fillFrench();
@@ -99,13 +98,22 @@ public class Game extends Thread {
 				}
 				
 				Player player = m_players[m_currentPlayerId];
-				if(player.isHuman()) {
+				if(player.isHuman() && ((PlayerHuman)player).isLocal()) {
 					try {
 						emitUpdate(Update.CAN_CLOSE_CARD, (m_roundPlays == 1 || m_roundPlays == 2) ? 1 : 0, null);
 						m_canLocalPlayCard = true;
 						this.wait();
 						m_canLocalPlayCard = false;
 						emitUpdate(Update.CAN_CLOSE_CARD, 0, null);
+					} catch (InterruptedException e) {
+						return;
+					}
+				}
+				else if(player.isHuman()) { // wait for someone else to play
+					try {
+						m_canGuestPlayCard = true;
+						this.wait();
+						m_canGuestPlayCard = false;
 					} catch (InterruptedException e) {
 						return;
 					}
@@ -135,7 +143,18 @@ public class Game extends Thread {
 	
 	public boolean playCard(int id, boolean closed) {
 		if(m_canLocalPlayCard) {
-			PlayerHuman player = (PlayerHuman)m_players[0];
+			PlayerHuman player = (PlayerHuman)m_players[m_currentPlayerId];
+			if(m_roundPlays == 0 || m_roundPlays == 3)
+				closed = false;
+			player.playCard(id, closed);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean playGuestCard(int id, boolean closed) {
+		if(m_canGuestPlayCard) {
+			PlayerHuman player = (PlayerHuman)m_players[m_currentPlayerId];
 			if(m_roundPlays == 0 || m_roundPlays == 3)
 				closed = false;
 			player.playCard(id, closed);
